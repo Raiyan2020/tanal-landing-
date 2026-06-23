@@ -6,9 +6,24 @@ import Link from "next/link";
 import { Globe } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
+// Nav labels per language (kept locally — no API call needed for nav)
+const NAV_LABELS: Record<Lang, Record<string, string>> = {
+  ar: {
+    howItWorks: "كيف يعمل؟",
+    features: "المميزات",
+    portfolio: "أعمالنا",
+    contact: "تواصل معنا",
+  },
+  en: {
+    howItWorks: "How It Works",
+    features: "Features",
+    portfolio: "Portfolio",
+    contact: "Contact",
+  },
+};
+
 interface HeaderProps {
   lang: Lang;
-  d: any; // Using any for simplicity here or import the type
   isRtl: boolean;
   headingFontClass: string;
   toggleLanguage?: () => void;
@@ -16,7 +31,6 @@ interface HeaderProps {
 
 export default function Header({
   lang,
-  d,
   isRtl,
   headingFontClass,
   toggleLanguage,
@@ -24,6 +38,8 @@ export default function Header({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+  const nav = NAV_LABELS[lang];
 
   const handleToggleLanguage = () => {
     if (toggleLanguage) {
@@ -56,25 +72,25 @@ export default function Header({
             href={`/?lang=${lang}#how-it-works`}
             className={`${headingFontClass} text-lg hover:text-[#362d23] transition-colors ${isRtl ? "font-medium" : ""} text-[#857363]`}
           >
-            {d.nav.howItWorks}
+            {nav.howItWorks}
           </Link>
           <Link
             href={`/?lang=${lang}#features`}
             className={`${headingFontClass} text-lg hover:text-[#362d23] transition-colors ${isRtl ? "font-medium" : ""} text-[#857363]`}
           >
-            {d.nav.features}
+            {nav.features}
           </Link>
           <Link
             href={`/?lang=${lang}#portfolio`}
             className={`${headingFontClass} text-lg hover:text-[#362d23] transition-colors ${isRtl ? "font-medium" : ""} text-[#857363]`}
           >
-            {d.nav.portfolio}
+            {nav.portfolio}
           </Link>
           <Link
             href={`/?lang=${lang}#contact`}
             className={`${headingFontClass} text-lg hover:text-[#362d23] transition-colors ${isRtl ? "font-medium" : ""} text-[#857363]`}
           >
-            {d.nav.contact}
+            {nav.contact}
           </Link>
         </div>
 
