@@ -56,6 +56,17 @@ export default function HowItWorksSection({
                     height={28}
                     className="object-contain"
                     referrerPolicy="no-referrer"
+                    onError={(e) => {
+                      const img = e.currentTarget as HTMLImageElement;
+                      const parent = img.parentElement;
+                      img.style.display = "none";
+                      if (parent && !parent.querySelector(".step-fallback")) {
+                        const span = document.createElement("span");
+                        span.className = "step-fallback text-[#857363] text-xl font-bold";
+                        span.textContent = String(i + 1);
+                        parent.appendChild(span);
+                      }
+                    }}
                   />
                 </div>
               ) : (

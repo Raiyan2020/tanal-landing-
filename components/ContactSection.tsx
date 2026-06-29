@@ -165,8 +165,8 @@ export default function ContactSection({
                   <div className="flex items-center gap-4 justify-center lg:justify-start">
                     {[...social_links]
                       .sort((a, b) => a.sort - b.sort)
-                      .map((link) => (
-                        <SocialIcon key={link.platform} link={link} />
+                      .map((link, idx) => (
+                        <SocialIcon key={`${link.platform}-${idx}`} link={link} />
                       ))}
                   </div>
                 </>

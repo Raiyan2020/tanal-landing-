@@ -59,6 +59,9 @@ export default function FeaturesSection({
                     height={28}
                     className="object-contain"
                     referrerPolicy="no-referrer"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).style.display = "none";
+                    }}
                   />
                 ) : (
                   <div className="w-6 h-6 bg-[#857363]/20 rounded-full" />

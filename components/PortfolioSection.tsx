@@ -14,6 +14,19 @@ const FALLBACK_IMAGES = [
   "https://raiyansoft.com/wp-content/uploads/2026/05/3.png",
 ];
 
+/** Returns a valid absolute URL or null. Catches malformed URLs (e.g. duplicated base path from API). */
+function safeImageUrl(url: string | null): string | null {
+  if (!url) return null;
+  try {
+    const parsed = new URL(url);
+    // Reject URLs that look like a doubled path (e.g. the path contains another http/https)
+    if (parsed.pathname.includes("http")) return null;
+    return url;
+  } catch {
+    return null;
+  }
+}
+
 interface PortfolioSectionProps {
   data: SitePortfolio;
   headingFontClass: string;
@@ -45,7 +58,8 @@ export default function PortfolioSection({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {data.items.map((item, i) => {
             const imgSrc =
-              item.image_url || FALLBACK_IMAGES[i % FALLBACK_IMAGES.length];
+              safeImageUrl(item.image_url) ??
+              FALLBACK_IMAGES[i % FALLBACK_IMAGES.length];
             return (
               <motion.div
                 key={item.id}
@@ -65,6 +79,10 @@ export default function PortfolioSection({
                   fill
                   className="object-cover transition-transform duration-1000 group-hover:scale-110"
                   referrerPolicy="no-referrer"
+                  onError={(e) => {
+                    const target = e.currentTarget as HTMLImageElement;
+                    target.src = FALLBACK_IMAGES[i % FALLBACK_IMAGES.length];
+                  }}
                 />
                 {/* Overlays */}
                 <div className="absolute inset-0 bg-gradient-to-t from-[#362d23]/90 via-[#362d23]/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-500" />

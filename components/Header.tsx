@@ -27,13 +27,19 @@ interface HeaderProps {
   isRtl: boolean;
   headingFontClass: string;
   toggleLanguage?: () => void;
+  /** Logo URL from API (footer.logo_url). Falls back to the static asset if not provided. */
+  logoUrl?: string | null;
 }
+
+const FALLBACK_LOGO =
+  "https://raiyansoft.com/wp-content/uploads/2026/05/logo-2.png";
 
 export default function Header({
   lang,
   isRtl,
   headingFontClass,
   toggleLanguage,
+  logoUrl,
 }: HeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -58,7 +64,7 @@ export default function Header({
         <Link href={`/?lang=${lang}`} className="flex items-center gap-4">
           <div className="relative w-28 h-10">
             <Image
-              src="https://raiyansoft.com/wp-content/uploads/2026/05/logo-2.png"
+              src={logoUrl || FALLBACK_LOGO}
               alt="Tanal Logo"
               fill
               className={`object-contain md:object-center ${isRtl ? "object-right" : "object-left"}`}

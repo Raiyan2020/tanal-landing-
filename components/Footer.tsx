@@ -13,9 +13,11 @@ interface FooterProps {
   lang: Lang;
   isRtl: boolean;
   data: SiteFooter;
+  /** WhatsApp URL from API (contact.settings.whatsapp_url) for the floating button */
+  whatsappUrl?: string | null;
 }
 
-export default function Footer({ lang, isRtl, data }: FooterProps) {
+export default function Footer({ lang, isRtl, data, whatsappUrl }: FooterProps) {
   const labels = FOOTER_LABELS[lang];
   const logoSrc =
     data.logo_url ||
@@ -77,7 +79,7 @@ export default function Footer({ lang, isRtl, data }: FooterProps) {
       {/* Floating WhatsApp Button — shown via ContactSection settings ideally;
           here we use a static fallback href that ContactSection will override */}
       <a
-        href="https://wa.me/96550123456"
+        href={whatsappUrl || "https://wa.me/"}
         target="_blank"
         rel="noopener noreferrer"
         className={`fixed bottom-4 md:bottom-6 ${isRtl ? "left-4 md:left-6" : "right-4 md:right-6"} z-50 w-14 h-14 md:w-16 md:h-16 bg-[#25D366] rounded-full flex items-center justify-center shadow-[0_8px_30px_rgba(37,211,102,0.4)] hover:scale-110 transition-transform duration-300 drop-shadow-xl`}

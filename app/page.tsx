@@ -107,6 +107,7 @@ function HomeComponent() {
           isRtl={isRtl}
           headingFontClass={headingFontClass}
           toggleLanguage={toggleLanguage}
+          logoUrl={siteData?.footer?.logo_url}
         />
       </Suspense>
 
@@ -159,6 +160,7 @@ function HomeComponent() {
             lang={lang}
             isRtl={isRtl}
             data={siteData.footer}
+            whatsappUrl={siteData.contact?.settings?.whatsapp_url}
           />
         </>
       )}
