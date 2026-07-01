@@ -4,25 +4,46 @@ import Image from "next/image";
 import { motion } from "motion/react";
 import type { SitePortfolio } from "@/lib/types";
 
-// Fallback images when API returns null image_url
-const FALLBACK_IMAGES = [
-  "https://raiyansoft.com/wp-content/uploads/2026/05/invitation-design-1.png",
-  "https://raiyansoft.com/wp-content/uploads/2026/05/2.png",
-  "https://raiyansoft.com/wp-content/uploads/2026/05/1.png",
-  "https://raiyansoft.com/wp-content/uploads/2026/05/4.png",
-  "https://raiyansoft.com/wp-content/uploads/2026/05/5.png",
-  "https://raiyansoft.com/wp-content/uploads/2026/05/3.png",
-];
+const BASE_STORAGE_URL =
+  "https://portal.tanal.raiyan.cc/storage/images/landing/portfolio/";
 
-/** Returns a valid absolute URL or null. Catches malformed URLs (e.g. duplicated base path from API). */
-function safeImageUrl(url: string | null): string | null {
+/**
+ * Cleans the image URL returned by the API.
+ *
+ * The backend sometimes produces a doubled path like:
+ *   https://portal.tanal.raiyan.cc/storage/images/landing/portfolio/https://portal.tanal.raiyan.cc/storage/images/landing/portfolio/file.webp
+ *
+ * This function extracts the real filename and rebuilds a clean URL.
+ * Returns null when the URL is empty / truly invalid.
+ */
+function cleanImageUrl(url: string | null | undefined): string | null {
   if (!url) return null;
+
+  // Strip any leading/trailing whitespace
+  const trimmed = url.trim();
+  if (!trimmed) return null;
+
+  // Detect the doubled-path pattern: pathname contains "http"
   try {
-    const parsed = new URL(url);
-    // Reject URLs that look like a doubled path (e.g. the path contains another http/https)
-    if (parsed.pathname.includes("http")) return null;
-    return url;
+    const parsed = new URL(trimmed);
+    if (parsed.pathname.includes("http")) {
+      // The real URL starts at the second "http" occurrence inside the string
+      const secondHttp = trimmed.indexOf("http", 4); // skip the first "http"
+      if (secondHttp !== -1) {
+        const real = trimmed.slice(secondHttp);
+        // Validate the extracted URL
+        new URL(real);
+        return real;
+      }
+      // Can't recover – discard
+      return null;
+    }
+    return trimmed;
   } catch {
+    // Not even a valid URL – try prepending base storage URL if it looks like a filename
+    if (!trimmed.startsWith("http") && trimmed.length > 0) {
+      return `${BASE_STORAGE_URL}${trimmed}`;
+    }
     return null;
   }
 }
@@ -36,6 +57,13 @@ export default function PortfolioSection({
   data,
   headingFontClass,
 }: PortfolioSectionProps) {
+  // Only render items that have a valid API image – no mock fallbacks
+  const validItems = data.items
+    .map((item) => ({ item, src: cleanImageUrl(item.image_url) }))
+    .filter((entry): entry is { item: typeof entry.item; src: string } =>
+      entry.src !== null
+    );
+
   return (
     <section
       id="portfolio"
@@ -56,48 +84,39 @@ export default function PortfolioSection({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {data.items.map((item, i) => {
-            const imgSrc =
-              safeImageUrl(item.image_url) ??
-              FALLBACK_IMAGES[i % FALLBACK_IMAGES.length];
-            return (
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: i * 0.1 }}
-                className={`relative group rounded-xl overflow-hidden aspect-[3/4] ${
-                  i === 0 || i === 3
-                    ? "md:col-span-2 lg:col-span-1 lg:row-span-2 aspect-[3/4] lg:aspect-[3/8.2]"
-                    : ""
-                }`}
-              >
-                <Image
-                  src={imgSrc}
-                  alt={item.name}
-                  fill
-                  className="object-cover transition-transform duration-1000 group-hover:scale-110"
-                  referrerPolicy="no-referrer"
-                  onError={(e) => {
-                    const target = e.currentTarget as HTMLImageElement;
-                    target.src = FALLBACK_IMAGES[i % FALLBACK_IMAGES.length];
-                  }}
-                />
-                {/* Overlays */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#362d23]/90 via-[#362d23]/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-500" />
-                <div className="absolute inset-0 border border-white/10 rounded-xl m-4 scale-95 opacity-0 group-hover:scale-100 group-hover:opacity-100 transition-all duration-500 pointer-events-none" />
+          {validItems.map(({ item, src }, i) => (
+            <motion.div
+              key={item.id}
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: i * 0.1 }}
+              className={`relative group rounded-xl overflow-hidden aspect-[3/4] ${
+                i === 0 || i === 3
+                  ? "md:col-span-2 lg:col-span-1 lg:row-span-2 aspect-[3/4] lg:aspect-[3/8.2]"
+                  : ""
+              }`}
+            >
+              <Image
+                src={src}
+                alt={item.name}
+                fill
+                className="object-cover transition-transform duration-1000 group-hover:scale-110"
+                referrerPolicy="no-referrer"
+              />
+              {/* Overlays */}
+              <div className="absolute inset-0 bg-gradient-to-t from-[#362d23]/90 via-[#362d23]/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-500" />
+              <div className="absolute inset-0 border border-white/10 rounded-xl m-4 scale-95 opacity-0 group-hover:scale-100 group-hover:opacity-100 transition-all duration-500 pointer-events-none" />
 
-                {/* Content */}
-                <div className="absolute bottom-0 left-0 right-0 p-8 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
-                  <div className="w-10 h-px bg-[#bbb2aa] mb-4" />
-                  <p className="text-white text-lg tracking-widest font-light">
-                    {item.name}
-                  </p>
-                </div>
-              </motion.div>
-            );
-          })}
+              {/* Content */}
+              <div className="absolute bottom-0 left-0 right-0 p-8 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+                <div className="w-10 h-px bg-[#bbb2aa] mb-4" />
+                <p className="text-white text-lg tracking-widest font-light">
+                  {item.name}
+                </p>
+              </div>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>

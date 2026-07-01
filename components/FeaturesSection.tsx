@@ -57,7 +57,7 @@ export default function FeaturesSection({
                     alt={feature.title}
                     width={28}
                     height={28}
-                    className="object-contain"
+                    className="object-cover w-full h-full"
                     referrerPolicy="no-referrer"
                     onError={(e) => {
                       (e.currentTarget as HTMLImageElement).style.display = "none";

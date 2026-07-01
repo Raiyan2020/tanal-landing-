@@ -4,7 +4,7 @@
   --color-primary: #857363;
   --color-secondary: #362d23;
   --color-accent: #bbb2aa;
-  
+
   --font-serif: var(--font-playfair);
   --font-arabic: var(--font-tajawal), Tajawal, "Tajawal Fallback", sans-serif;
   --font-sans: var(--font-inter);
@@ -14,13 +14,29 @@
   html {
     scroll-behavior: smooth;
   }
+
   body {
     background-color: #faf9f8;
     color: var(--color-secondary);
   }
 
-  [dir="rtl"], [dir="rtl"] * {
+  [dir="rtl"],
+  [dir="rtl"] * {
     font-family: var(--font-tajawal), Tajawal, "Tajawal Fallback", sans-serif !important;
+  }
+}
+
+.rdp-button_previous,
+.rdp-button_next {
+  color: #857363 !important;
+
+  svg {
+    background-color: #857363 !important;
+    border-radius: 50% !important;
+    color: white !important;
+    fill: white !important;
+    width: 20px !important;
+    height: 20px !important;
   }
 }
 
@@ -59,11 +75,9 @@
 }
 
 .bg-shimmer {
-  background: linear-gradient(
-    135deg,
-    rgba(255,255,255,0) 0%,
-    rgba(255,255,255,0.4) 50%,
-    rgba(255,255,255,0) 100%
-  );
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.4) 50%,
+      rgba(255, 255, 255, 0) 100%);
   background-size: 200% 200%;
 }

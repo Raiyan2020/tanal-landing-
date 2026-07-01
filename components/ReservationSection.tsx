@@ -3,8 +3,11 @@
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { motion } from "motion/react";
-import { ChevronRight, Loader2 } from "lucide-react";
+import { ChevronRight, Loader2, Calendar } from "lucide-react";
 import { fetchEventTypes } from "@/lib/api";
+import { DayPicker } from "@daypicker/react";
+import "@daypicker/react/dist/style.css";
+import { ar } from "date-fns/locale";
 import type { EventType, ServiceRequestPayload } from "@/lib/types";
 import { Lang } from "@/lib/dictionaries";
 
@@ -61,6 +64,43 @@ export default function ReservationSection({
   const [eventTypes, setEventTypes] = useState<EventType[]>([]);
   const [loadingTypes, setLoadingTypes] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [eventDate, setEventDate] = useState("");
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const datePickerRef = useRef<HTMLDivElement>(null);
+
+  const dir = isRtl ? "rtl" : "ltr";
+
+  // Close datepicker when clicking outside
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (
+        datePickerRef.current &&
+        !datePickerRef.current.contains(e.target as Node)
+      ) {
+        setShowDatePicker(false);
+      }
+    };
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, []);
+
+  const getMinAllowedDate = () => {
+    const minDate = new Date();
+    minDate.setDate(minDate.getDate() + 1); // Only tomorrow and later (next days)
+    minDate.setHours(0, 0, 0, 0);
+    return minDate;
+  };
+
+  const handleDateSelect = (date: Date | undefined) => {
+    if (!date) return;
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, "0");
+    const dd = String(date.getDate()).padStart(2, "0");
+    setEventDate(`${yyyy}-${mm}-${dd}`);
+    setShowDatePicker(false);
+  };
+
+  const selectedDate = eventDate ? new Date(eventDate) : undefined;
 
   useEffect(() => {
     setLoadingTypes(true);
@@ -87,6 +127,7 @@ export default function ReservationSection({
     try {
       await onSubmit(payload);
       formRef.current?.reset();
+      setEventDate("");
     } finally {
       setSubmitting(false);
     }
@@ -124,7 +165,7 @@ export default function ReservationSection({
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="bg-white rounded-[2rem] p-8 md:p-12 relative overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-[#bbb2aa]/30"
+          className="bg-white rounded-[2rem] p-8 md:p-12 relative shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-[#bbb2aa]/30"
         >
           {/* Decorative blobs */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-[#362d23]/5 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/2" />
@@ -230,12 +271,37 @@ export default function ReservationSection({
               <label className="text-sm font-medium text-[#362d23] text-start">
                 {labels.eventDateLabel}
               </label>
-              <input
-                name="event_date"
-                type="date"
-                className={`w-full bg-[#faf9f8] border border-[#bbb2aa]/30 text-[#362d23] rounded-xl px-4 py-4 focus:outline-none focus:ring-2 focus:ring-[#857363]/50 focus:border-[#857363]/50 transition-all ${isRtl ? "[&::-webkit-calendar-picker-indicator]:ml-[-0.5rem] [&::-webkit-calendar-picker-indicator]:mr-auto" : ""}`}
-                required
-              />
+              <div className="relative" ref={datePickerRef}>
+                <button
+                  type="button"
+                  onClick={() => setShowDatePicker(!showDatePicker)}
+                  className="w-full bg-[#faf9f8] border border-[#bbb2aa]/30 text-[#362d23] rounded-xl px-4 py-4 focus:outline-none focus:ring-2 focus:ring-[#857363]/50 focus:border-[#857363]/50 transition-all text-start flex justify-between items-center cursor-pointer font-normal text-base h-[58px]"
+                >
+                  <span className={eventDate ? "text-[#362d23]" : "text-[#bbb2aa]"}>
+                    {eventDate || (isRtl ? "اختر تاريخ المناسبة..." : "Select event date...")}
+                  </span>
+                  <Calendar className="w-5 h-5 text-[#857363] shrink-0" />
+                </button>
+                <input
+                  type="hidden"
+                  name="event_date"
+                  value={eventDate}
+                  required
+                />
+
+                {showDatePicker && (
+                  <div className="absolute bottom-0  z-[9999] mt-2 p-3 bg-white border border-[#bbb2aa]/30 rounded-2xl shadow-xl left-0 rtl:right-0 w-fit">
+                    <DayPicker
+                      mode="single"
+                      selected={selectedDate}
+                      onSelect={handleDateSelect}
+                      disabled={{ before: getMinAllowedDate() }}
+                      locale={isRtl ? ar : undefined}
+                      dir={dir}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Error message */}
