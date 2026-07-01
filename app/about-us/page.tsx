@@ -35,7 +35,7 @@ function PageContent() {
     return "ar";
   };
 
-  const [lang] = useState<Lang>(getInitialLang);
+  const [lang, setLang] = useState<Lang>(getInitialLang);
   const [content, setContent] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -43,10 +43,19 @@ function PageContent() {
   const fontClass = isRtl ? "font-arabic" : "font-sans";
   const headingFontClass = isRtl ? "font-arabic font-bold" : "font-serif";
 
+  // Sync document direction & persist lang
   useEffect(() => {
     document.documentElement.dir = isRtl ? "rtl" : "ltr";
     document.documentElement.lang = lang;
+    localStorage.setItem(LANG_STORAGE_KEY, lang);
   }, [lang, isRtl]);
+
+  // Sync state when URL query parameter changes
+  useEffect(() => {
+    if (langQuery === "en" || langQuery === "ar") {
+      setLang(langQuery);
+    }
+  }, [langQuery]);
 
   useEffect(() => {
     setLoading(true);

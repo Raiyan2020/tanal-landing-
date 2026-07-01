@@ -23,10 +23,15 @@ export const metadata: Metadata = {
   description: 'Design, customize, and share elegant invitations that capture the magic of your special day with our premium luxury platform.',
 };
 
+import SplashScreen from '@/components/SplashScreen';
+
 export default function RootLayout({children}: {children: React.ReactNode}) {
   return (
-    <html lang="en" className={`scroll-smooth ${inter.variable} ${playfair.variable} ${tajawal.variable}`}>
-      <body className="antialiased font-sans" suppressHydrationWarning>{children}</body>
+    <html lang="ar" dir="rtl" className={`scroll-smooth ${inter.variable} ${playfair.variable} ${tajawal.variable}`}>
+      <body className="antialiased font-sans" suppressHydrationWarning>
+        <SplashScreen />
+        {children}
+      </body>
     </html>
   );
 }

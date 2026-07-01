@@ -49,6 +49,13 @@ function HomeComponent() {
     localStorage.setItem(LANG_STORAGE_KEY, lang);
   }, [lang, isRtl]);
 
+  // Sync state when URL query parameter changes
+  useEffect(() => {
+    if (langQuery === "en" || langQuery === "ar") {
+      setLang(langQuery);
+    }
+  }, [langQuery]);
+
   // Fetch site data whenever lang changes
   useEffect(() => {
     setLoading(true);
@@ -107,7 +114,6 @@ function HomeComponent() {
           isRtl={isRtl}
           headingFontClass={headingFontClass}
           toggleLanguage={toggleLanguage}
-          logoUrl={siteData?.footer?.logo_url}
         />
       </Suspense>
 

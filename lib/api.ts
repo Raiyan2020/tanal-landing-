@@ -44,6 +44,7 @@ async function request<T>(
       ...(!isFormData && { "Content-Type": "application/json" }),
       Accept: "application/json",
       ...(lang && { "Accept-Language": lang }),
+      ...(lang && { "lang": lang }),
       ...headers,
     },
     body: isFormData ? body : body ? JSON.stringify(body) : undefined,

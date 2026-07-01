@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Globe } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import logo from "@/public/logo.webp";
 
 // Nav labels per language (kept locally — no API call needed for nav)
 const NAV_LABELS: Record<Lang, Record<string, string>> = {
@@ -39,7 +40,6 @@ export default function Header({
   isRtl,
   headingFontClass,
   toggleLanguage,
-  logoUrl,
 }: HeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -48,13 +48,12 @@ export default function Header({
   const nav = NAV_LABELS[lang];
 
   const handleToggleLanguage = () => {
-    if (toggleLanguage) {
-      toggleLanguage();
-    } else {
-      const newLang = lang === "en" ? "ar" : "en";
-      const params = new URLSearchParams(searchParams.toString());
+    const newLang = lang === "en" ? "ar" : "en";
+    if (typeof window !== "undefined") {
+      localStorage.setItem("tanal_lang", newLang);
+      const params = new URLSearchParams(window.location.search);
       params.set("lang", newLang);
-      router.push(`${pathname}?${params.toString()}`);
+      window.location.href = `${window.location.pathname}?${params.toString()}`;
     }
   };
 
@@ -64,7 +63,7 @@ export default function Header({
         <Link href={`/?lang=${lang}`} className="flex items-center gap-4">
           <div className="relative w-28 h-10">
             <Image
-              src={logoUrl || FALLBACK_LOGO}
+              src={logo || FALLBACK_LOGO}
               alt="Tanal Logo"
               fill
               className={`object-contain md:object-center ${isRtl ? "object-right" : "object-left"}`}
