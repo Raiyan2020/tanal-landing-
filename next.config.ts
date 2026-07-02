@@ -2,6 +2,14 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  async rewrites() {
+    return [
+      {
+        source: '/api/v1/:path*',
+        destination: `${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://portal.tanal.raiyan.cc/api/v1'}/:path*`,
+      },
+    ];
+  },
   eslint: {
     ignoreDuringBuilds: true,
   },

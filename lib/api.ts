@@ -18,9 +18,9 @@ import type {
   TermsData,
 } from "./types";
 
-export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL ||
-  "https://portal.tanal.raiyan.cc/api/v1";
+export const API_BASE_URL = typeof window === 'undefined'
+  ? (process.env.NEXT_PUBLIC_API_BASE_URL || "https://portal.tanal.raiyan.cc/api/v1")
+  : "/api/v1";
 
 // ─── Generic request helper ──────────────────────────────────────────────────
 

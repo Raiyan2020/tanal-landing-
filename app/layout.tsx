@@ -1,4 +1,4 @@
-import type {Metadata} from 'next';
+import type { Metadata } from 'next';
 import { Inter, Playfair_Display, Tajawal } from 'next/font/google';
 import './globals.css'; // Global styles
 
@@ -23,11 +23,16 @@ export const metadata: Metadata = {
   description: 'Design, customize, and share elegant invitations that capture the magic of your special day with our premium luxury platform.',
 };
 
+import { cookies } from 'next/headers';
 import SplashScreen from '@/components/SplashScreen';
 
-export default function RootLayout({children}: {children: React.ReactNode}) {
+export default async function RootLayout({children}: {children: React.ReactNode}) {
+  const cookieStore = await cookies();
+  const lang = cookieStore.get('tanal_lang')?.value || 'ar';
+  const dir = lang === 'ar' ? 'rtl' : 'ltr';
+
   return (
-    <html lang="ar" dir="rtl" className={`scroll-smooth ${inter.variable} ${playfair.variable} ${tajawal.variable}`}>
+    <html lang={lang} dir={dir} className={`scroll-smooth ${inter.variable} ${playfair.variable} ${tajawal.variable}`}>
       <body className="antialiased font-sans" suppressHydrationWarning>
         <SplashScreen />
         {children}
