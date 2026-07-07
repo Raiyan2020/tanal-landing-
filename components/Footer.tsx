@@ -82,6 +82,7 @@ export default function Footer({ lang, isRtl, data, whatsappUrl }: FooterProps) 
         href={whatsappUrl || "https://wa.me/"}
         target="_blank"
         rel="noopener noreferrer"
+        aria-label="Contact us on WhatsApp"
         className={`fixed bottom-4 md:bottom-6 ${isRtl ? "left-4 md:left-6" : "right-4 md:right-6"} z-50 w-14 h-14 md:w-16 md:h-16 bg-[#25D366] rounded-full flex items-center justify-center shadow-[0_8px_30px_rgba(37,211,102,0.4)] hover:scale-110 transition-transform duration-300 drop-shadow-xl`}
       >
         <Image

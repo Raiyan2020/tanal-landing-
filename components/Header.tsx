@@ -102,6 +102,7 @@ export default function Header({
         <div className="flex items-center gap-4">
           <button
             onClick={handleToggleLanguage}
+            aria-label={lang === "en" ? "Switch to Arabic" : "Switch to English"}
             className="px-3 py-2 rounded-full hover:bg-black/5 transition-colors text-sm uppercase tracking-wider flex items-center gap-2 font-medium"
           >
             <Globe className="w-4 h-4 text-[#857363]" />

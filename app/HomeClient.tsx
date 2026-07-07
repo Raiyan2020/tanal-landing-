@@ -1,19 +1,23 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
+import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "motion/react";
 import { CheckCircle } from "lucide-react";
 import { Lang } from "../lib/dictionaries";
 import { submitServiceRequest } from "@/lib/api";
 import type { SiteData, ServiceRequestPayload } from "@/lib/types";
 import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import HeroSection from "@/components/HeroSection";
-import HowItWorksSection from "@/components/HowItWorksSection";
-import FeaturesSection from "@/components/FeaturesSection";
-import PortfolioSection from "@/components/PortfolioSection";
-import ReservationSection from "@/components/ReservationSection";
-import ContactSection from "@/components/ContactSection";
+
+// ─── Lazy-load all below-fold sections ──────────────────────────────────────
+// This defers the motion library, date-fns, @daypicker/react from initial load
+const HowItWorksSection = dynamic(() => import("@/components/HowItWorksSection"), { ssr: false });
+const FeaturesSection = dynamic(() => import("@/components/FeaturesSection"), { ssr: false });
+const PortfolioSection = dynamic(() => import("@/components/PortfolioSection"), { ssr: false });
+const ReservationSection = dynamic(() => import("@/components/ReservationSection"), { ssr: false });
+const ContactSection = dynamic(() => import("@/components/ContactSection"), { ssr: false });
+const Footer = dynamic(() => import("@/components/Footer"), { ssr: false });
 
 const LANG_STORAGE_KEY = "tanal_lang";
 
@@ -72,8 +76,8 @@ export default function HomeClient({ initialSiteData, initialLang }: HomeClientP
       dir={isRtl ? "rtl" : "ltr"}
       className={`min-h-screen bg-[#faf9f8] text-[#362d23] ${fontClass} overflow-x-hidden`}
     >
-      {/* Decorative Gradients */}
-      <div className="fixed inset-0 pointer-events-none z-[-1]">
+      {/* Decorative Gradients — using will-change:transform for GPU compositing */}
+      <div className="fixed inset-0 pointer-events-none z-[-1]" style={{ willChange: "transform" }}>
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-[#857363]/10 blur-[120px]" />
         <div className="absolute top-[20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-[#bbb2aa]/20 blur-[100px]" />
         <div className="absolute bottom-[-10%] left-[20%] w-[40%] h-[40%] rounded-full bg-[#857363]/5 blur-[100px]" />
@@ -90,12 +94,14 @@ export default function HomeClient({ initialSiteData, initialLang }: HomeClientP
       {/* Page sections */}
       {siteData ? (
         <>
+          {/* Hero is server-rendered and above the fold — keep eager */}
           <HeroSection
             data={siteData.hero}
             isRtl={isRtl}
             headingFontClass={headingFontClass}
           />
 
+          {/* Below-fold sections load lazily */}
           <HowItWorksSection
             data={siteData.how_it_works}
             isRtl={isRtl}

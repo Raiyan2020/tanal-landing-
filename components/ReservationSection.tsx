@@ -189,10 +189,11 @@ export default function ReservationSection({
           >
             {/* Name */}
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium text-[#362d23] text-start">
+              <label htmlFor="field-name" className="text-sm font-medium text-[#362d23] text-start">
                 {labels.nameLabel}
               </label>
               <input
+                id="field-name"
                 name="name"
                 type="text"
                 placeholder={labels.namePlaceholder}
@@ -203,18 +204,21 @@ export default function ReservationSection({
 
             {/* Country Code + Phone */}
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium text-[#362d23] text-start">
+              <label htmlFor="field-phone" className="text-sm font-medium text-[#362d23] text-start">
                 {labels.phoneLabel}
               </label>
               <div className="flex gap-2" dir="ltr">
                 <input
+                  id="field-country-code"
                   name="country_code"
                   type="text"
+                  aria-label={labels.countryCodeLabel}
                   defaultValue="+965"
                   className="w-24 bg-[#faf9f8] border border-[#bbb2aa]/30 text-[#362d23] rounded-xl px-3 py-4 focus:outline-none focus:ring-2 focus:ring-[#857363]/50 focus:border-[#857363]/50 transition-all text-center"
                   required
                 />
                 <input
+                  id="field-phone"
                   name="phone"
                   type="tel"
                   placeholder={labels.phonePlaceholder}
@@ -226,11 +230,12 @@ export default function ReservationSection({
 
             {/* Event Type */}
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium text-[#362d23] text-start">
+              <label htmlFor="field-event-type" className="text-sm font-medium text-[#362d23] text-start">
                 {labels.eventTypeLabel}
               </label>
               <div className="relative">
                 <select
+                  id="field-event-type"
                   name="landing_event_type_id"
                   className="w-full bg-[#faf9f8] border border-[#bbb2aa]/30 text-[#362d23] rounded-xl px-4 py-4 appearance-none focus:outline-none focus:ring-2 focus:ring-[#857363]/50 focus:border-[#857363]/50 transition-all leading-tight"
                   required
@@ -268,11 +273,12 @@ export default function ReservationSection({
 
             {/* Event Date */}
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium text-[#362d23] text-start">
+              <label htmlFor="field-event-date" className="text-sm font-medium text-[#362d23] text-start">
                 {labels.eventDateLabel}
               </label>
               <div className="relative" ref={datePickerRef}>
                 <button
+                  id="field-event-date"
                   type="button"
                   onClick={() => setShowDatePicker(!showDatePicker)}
                   className="w-full bg-[#faf9f8] border border-[#bbb2aa]/30 text-[#362d23] rounded-xl px-4 py-4 focus:outline-none focus:ring-2 focus:ring-[#857363]/50 focus:border-[#857363]/50 transition-all text-start flex justify-between items-center cursor-pointer font-normal text-base h-[58px]"

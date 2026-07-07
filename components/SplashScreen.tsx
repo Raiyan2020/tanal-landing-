@@ -9,15 +9,25 @@ const FALLBACK_LOGO =
   "https://raiyansoft.com/wp-content/uploads/2026/05/logo-2.png";
 
 export default function SplashScreen() {
-  const [isVisible, setIsVisible] = useState(true);
+  // Start hidden — only show after client hydration to not block LCP paint
+  const [mounted, setMounted] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsVisible(false);
-    }, 1000); // 1 second
-
-    return () => clearTimeout(timer);
+    // Show only on the very first visit in the session
+    const hasVisited = sessionStorage.getItem("tanal_visited");
+    if (!hasVisited) {
+      setMounted(true);
+      setIsVisible(true);
+      sessionStorage.setItem("tanal_visited", "1");
+      const timer = setTimeout(() => {
+        setIsVisible(false);
+      }, 800);
+      return () => clearTimeout(timer);
+    }
   }, []);
+
+  if (!mounted) return null;
 
   return (
     <AnimatePresence>
@@ -25,7 +35,7 @@ export default function SplashScreen() {
         <motion.div
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.5, ease: "easeInOut" }}
+          transition={{ duration: 0.4, ease: "easeInOut" }}
           className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#faf9f8]"
         >
           {/* Decorative luxury gradient background */}
@@ -38,13 +48,13 @@ export default function SplashScreen() {
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
             className="flex flex-col items-center justify-center p-8 relative"
           >
             {/* Elegant luxury framing borders */}
             <div className="absolute -inset-4 rounded-3xl border border-[#bbb2aa]/30 pointer-events-none" />
             <div className="absolute -inset-2 rounded-2xl border border-[#857363]/10 pointer-events-none" />
-            
+
             <div className="relative w-48 h-20">
               <Image
                 src={logo || FALLBACK_LOGO}
@@ -55,7 +65,7 @@ export default function SplashScreen() {
                 referrerPolicy="no-referrer"
               />
             </div>
-            
+
             {/* Shimmer/Pulse indicator */}
             <motion.div
               animate={{ opacity: [0.3, 0.7, 0.3] }}

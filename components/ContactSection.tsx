@@ -47,7 +47,13 @@ function SocialIcon({ link }: { link: SiteSocialLink }) {
 
   if (!inner) return null;
   return (
-    <a href={link.url} target="_blank" rel="noopener noreferrer" className={cls}>
+    <a
+      href={link.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={`Visit our ${link.platform} page`}
+      className={cls}
+    >
       {inner}
     </a>
   );
@@ -143,6 +149,7 @@ export default function ContactSection({
               <div className="w-full h-full rounded-xl overflow-hidden relative">
                 <iframe
                   src={mapEmbed}
+                  title="Google Maps location"
                   className="absolute inset-0 w-full h-full border-0 opacity-90 hover:opacity-100 transition-opacity"
                   allowFullScreen={false}
                   loading="lazy"

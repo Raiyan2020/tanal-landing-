@@ -18,10 +18,8 @@ export default function HeroSection({
 }: HeroSectionProps) {
   return (
     <section className="relative flex flex-col items-center justify-center pb-12 md:pb-20">
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1 }}
+      {/* Hero text — no motion wrapper so h1 paints immediately for LCP */}
+      <div
         className="relative w-full z-10 text-center flex flex-col items-center pt-32 pb-12 md:pt-48 md:pb-16 px-6 overflow-hidden"
       >
         {/* Background Image */}
@@ -29,21 +27,25 @@ export default function HeroSection({
           <div className="hidden md:block absolute inset-0">
             <Image
               src="https://raiyansoft.com/wp-content/uploads/2026/05/878787.png"
-              alt="Hero Description Background"
+              alt=""
               fill
+              sizes="100vw"
               className="object-cover opacity-40"
               referrerPolicy="no-referrer"
               priority
+              fetchPriority="high"
             />
           </div>
           <div className="block md:hidden absolute inset-0">
             <Image
               src="https://raiyansoft.com/wp-content/uploads/2026/05/44334.png"
-              alt="Hero Description Background Mobile"
+              alt=""
               fill
+              sizes="100vw"
               className="object-cover opacity-40 md:opacity-30"
               referrerPolicy="no-referrer"
               priority
+              fetchPriority="high"
             />
           </div>
           <div className="absolute inset-0 bg-gradient-to-b from-[#faf9f8]/80 via-[#faf9f8]/30 to-[#faf9f8]" />
@@ -53,19 +55,19 @@ export default function HeroSection({
         {/* Animated rings */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[800px] h-[600px] pointer-events-none z-0">
           <div
-            className="absolute top-0 right-0 w-64 h-64 border border-[#bbb2aa]/40 rounded-full blur-[2px] opacity-40 animate-pulse"
-            style={{ animationDuration: "4s" }}
+            className="absolute top-0 right-0 w-64 h-64 border border-[#bbb2aa]/40 rounded-full blur-[2px] opacity-40"
+            style={{ animationDuration: "4s", willChange: "opacity", animation: "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite" }}
           />
           <div
-            className="absolute bottom-10 left-10 w-96 h-96 border border-[#857363]/30 rounded-full blur-[4px] opacity-30 animate-pulse"
-            style={{ animationDuration: "6s" }}
+            className="absolute bottom-10 left-10 w-96 h-96 border border-[#857363]/30 rounded-full blur-[4px] opacity-30"
+            style={{ animationDuration: "6s", willChange: "opacity", animation: "pulse 6s cubic-bezier(0.4, 0, 0.6, 1) infinite" }}
           />
         </div>
 
         <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center">
           <div className="flex items-center gap-3 mb-6">
             <div className="h-px w-12 bg-gradient-to-r from-transparent to-[#857363]" />
-            <Sparkles className="w-5 h-5 text-[#857363] animate-pulse" />
+            <Sparkles className="w-5 h-5 text-[#857363]" />
             <div className="h-px w-12 bg-gradient-to-l from-transparent to-[#857363]" />
           </div>
 
@@ -100,7 +102,7 @@ export default function HeroSection({
             </a>
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Hero Image Mockup */}
       <motion.div
@@ -118,6 +120,9 @@ export default function HeroSection({
               }
               alt="Luxury Invitation"
               fill
+              priority
+              fetchPriority="high"
+              sizes="(max-width: 768px) 300px, 400px"
               className="object-cover opacity-80"
               referrerPolicy="no-referrer"
             />

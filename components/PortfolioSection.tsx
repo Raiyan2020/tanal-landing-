@@ -101,8 +101,10 @@ export default function PortfolioSection({
                 src={src}
                 alt={item.name}
                 fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
                 className="object-cover transition-transform duration-1000 group-hover:scale-110"
                 referrerPolicy="no-referrer"
+                loading="lazy"
               />
               {/* Overlays */}
               <div className="absolute inset-0 bg-gradient-to-t from-[#362d23]/90 via-[#362d23]/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-500" />

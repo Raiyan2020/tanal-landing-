@@ -5,17 +5,20 @@ import './globals.css'; // Global styles
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
+  display: 'swap',
 });
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
   variable: '--font-playfair',
+  display: 'swap',
 });
 
 const tajawal = Tajawal({
   weight: ['200', '300', '400', '500', '700', '800', '900'],
   subsets: ['arabic', 'latin'],
   variable: '--font-tajawal',
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -35,7 +38,7 @@ export default async function RootLayout({children}: {children: React.ReactNode}
     <html lang={lang} dir={dir} className={`scroll-smooth ${inter.variable} ${playfair.variable} ${tajawal.variable}`}>
       <body className="antialiased font-sans" suppressHydrationWarning>
         <SplashScreen />
-        {children}
+        <main>{children}</main>
       </body>
     </html>
   );

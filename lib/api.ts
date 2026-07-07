@@ -19,7 +19,7 @@ import type {
 } from "./types";
 
 export const API_BASE_URL = typeof window === 'undefined'
-  ? (process.env.NEXT_PUBLIC_API_BASE_URL || "https://portal.tanal.raiyan.cc/api/v1")
+  ? (process.env.NEXT_PUBLIC_API_BASE_URL)
   : "/api/v1";
 
 // ─── Generic request helper ──────────────────────────────────────────────────
@@ -28,6 +28,8 @@ type RequestOptions = Omit<RequestInit, "body"> & {
   body?: Record<string, unknown> | FormData;
   /** BCP-47 language tag sent as Accept-Language, e.g. "ar" or "en" */
   lang?: string;
+  /** Next.js fetch cache options (revalidate, tags, etc.) */
+  next?: NextFetchRequestConfig;
 };
 
 async function request<T>(
@@ -40,6 +42,7 @@ async function request<T>(
 
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     ...rest,
+    ...(options.next && { next: options.next }),
     headers: {
       ...(!isFormData && { "Content-Type": "application/json" }),
       Accept: "application/json",
@@ -91,34 +94,34 @@ export const api = {
 
 // ─── Site endpoints ───────────────────────────────────────────────────────────
 
-/** GET /site  — full landing page data */
+/** GET /site  — full landing page data (revalidated every 60s) */
 export const fetchSiteData = (lang: string) =>
   api
-    .get<ApiResponse<SiteData>>("/site", { lang })
+    .get<ApiResponse<SiteData>>("/site", { lang, next: { revalidate: 60 } } as RequestOptions)
     .then((res) => res.data);
 
 /** GET /site/about */
 export const fetchAbout = (lang: string) =>
   api
-    .get<ApiResponse<AboutData>>("/site/about", { lang })
+    .get<ApiResponse<AboutData>>("/site/about", { lang, next: { revalidate: 3600 } } as RequestOptions)
     .then((res) => res.data);
 
 /** GET /site/privacy */
 export const fetchPrivacy = (lang: string) =>
   api
-    .get<ApiResponse<PrivacyData>>("/site/privacy", { lang })
+    .get<ApiResponse<PrivacyData>>("/site/privacy", { lang, next: { revalidate: 3600 } } as RequestOptions)
     .then((res) => res.data);
 
 /** GET /site/terms */
 export const fetchTerms = (lang: string) =>
   api
-    .get<ApiResponse<TermsData>>("/site/terms", { lang })
+    .get<ApiResponse<TermsData>>("/site/terms", { lang, next: { revalidate: 3600 } } as RequestOptions)
     .then((res) => res.data);
 
-/** GET /site/event-types */
+/** GET /site/event-types (revalidated every 5 minutes) */
 export const fetchEventTypes = (lang: string) =>
   api
-    .get<ApiResponse<EventType[]>>("/site/event-types", { lang })
+    .get<ApiResponse<EventType[]>>("/site/event-types", { lang, next: { revalidate: 300 } } as RequestOptions)
     .then((res) => res.data);
 
 /** POST /site/service-requests */

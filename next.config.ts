@@ -16,7 +16,10 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: false,
   },
-  // Allow access to remote image placeholder.
+  // Images are served directly from their source URLs.
+  // unoptimized: true is required because the production server cannot
+  // proxy-fetch external images (raiyansoft.com, portal.tanal.raiyan.cc)
+  // through the Next.js /_next/image optimization endpoint.
   images: {
     unoptimized: true,
     remotePatterns: [
@@ -32,9 +35,70 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'portal.tanal.raiyan.cc',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
   output: 'standalone',
+  async headers() {
+    const securityHeaders = [
+      { key: 'X-Content-Type-Options', value: 'nosniff' },
+      { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+      { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+      { key: 'X-XSS-Protection', value: '1; mode=block' },
+      { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+      { key: 'Cross-Origin-Opener-Policy', value: 'same-origin-allow-popups' },
+      {
+        key: 'Content-Security-Policy',
+        value: [
+          "default-src 'self'",
+          // Scripts: self + Next.js inline scripts
+          "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+          // Styles: self + inline (Tailwind) + Google Fonts
+          "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+          // Fonts: Google Fonts
+          "font-src 'self' https://fonts.gstatic.com",
+          // Images: self + optimized images + remote CDNs used
+          "img-src 'self' data: blob: https://raiyansoft.com https://portal.tanal.raiyan.cc https://picsum.photos https://maps.googleapis.com https://maps.gstatic.com",
+          // Frames: Google Maps embed only
+          "frame-src https://maps.google.com https://www.google.com",
+          // Connections: self + API
+          "connect-src 'self' https://portal.tanal.raiyan.cc",
+        ].join('; '),
+      },
+    ];
+
+    return [
+      {
+        source: '/(.*)',
+        headers: securityHeaders,
+      },
+      {
+        // Long-lived cache for Next.js immutable static assets
+        source: '/_next/static/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        // Cache optimized images for 1 day
+        source: '/_next/image/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=86400, stale-while-revalidate=604800',
+          },
+        ],
+      },
+    ];
+  },
   transpilePackages: ['motion'],
   webpack: (config, { dev }) => {
     // HMR is disabled in AI Studio via DISABLE_HMR env var.
