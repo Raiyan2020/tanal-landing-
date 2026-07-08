@@ -16,10 +16,6 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: false,
   },
-  // Images are served directly from their source URLs.
-  // unoptimized: true is required because the production server cannot
-  // proxy-fetch external images (raiyansoft.com, portal.tanal.raiyan.cc)
-  // through the Next.js /_next/image optimization endpoint.
   images: {
     unoptimized: true,
     remotePatterns: [
