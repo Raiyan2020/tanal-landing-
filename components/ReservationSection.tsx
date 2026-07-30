@@ -23,6 +23,8 @@ const LABELS: Record<Lang, Record<string, string>> = {
     phonePlaceholder: "أدخل رقم جوالك",
     eventTypeLabel: "نوع المناسبة",
     eventTypePlaceholder: "اختر نوع المناسبة",
+    eventTypeEmpty: "لا توجد أنواع مناسبات متاحة حالياً",
+    eventTypeEmptyHint: "يرجى المحاولة لاحقاً أو التواصل معنا مباشرة.",
     eventDateLabel: "تاريخ المناسبة",
     submitButton: "أرسل الطلب",
     submitting: "جاري الإرسال...",
@@ -37,6 +39,8 @@ const LABELS: Record<Lang, Record<string, string>> = {
     phonePlaceholder: "Enter your phone number",
     eventTypeLabel: "Event Type",
     eventTypePlaceholder: "Select event type",
+    eventTypeEmpty: "No event types available right now",
+    eventTypeEmptyHint: "Please try again later, or contact us directly.",
     eventDateLabel: "Event Date",
     submitButton: "Send Request",
     submitting: "Sending...",
@@ -101,6 +105,11 @@ export default function ReservationSection({
   };
 
   const selectedDate = eventDate ? new Date(eventDate) : undefined;
+
+  // The endpoint returns `data: null` when none are configured, and a failed
+  // fetch leaves the list empty too — either way there is nothing to pick, so
+  // the form cannot produce a valid request.
+  const noEventTypes = !loadingTypes && eventTypes.length === 0;
 
   useEffect(() => {
     setLoadingTypes(true);
@@ -240,10 +249,14 @@ export default function ReservationSection({
                   className="w-full bg-[#faf9f8] border border-[#bbb2aa]/30 text-[#362d23] rounded-xl px-4 py-4 appearance-none focus:outline-none focus:ring-2 focus:ring-[#857363]/50 focus:border-[#857363]/50 transition-all leading-tight"
                   required
                   defaultValue=""
-                  disabled={loadingTypes}
+                  disabled={loadingTypes || noEventTypes}
                 >
                   <option value="" disabled>
-                    {loadingTypes ? "..." : labels.eventTypePlaceholder}
+                    {loadingTypes
+                      ? "..."
+                      : noEventTypes
+                        ? labels.eventTypeEmpty
+                        : labels.eventTypePlaceholder}
                   </option>
                   {eventTypes.map((et) => (
                     <option key={et.id} value={et.id}>
@@ -269,6 +282,11 @@ export default function ReservationSection({
                   </svg>
                 </div>
               </div>
+              {noEventTypes && (
+                <p className="text-sm text-[#857363] text-start">
+                  {labels.eventTypeEmptyHint}
+                </p>
+              )}
             </div>
 
             {/* Event Date */}
@@ -318,7 +336,7 @@ export default function ReservationSection({
             {/* Submit */}
             <button
               type="submit"
-              disabled={submitting}
+              disabled={submitting || loadingTypes || noEventTypes}
               className="mt-4 w-full bg-[#362d23] text-[#bbb2aa] rounded-xl px-8 py-5 font-bold tracking-widest uppercase hover:bg-[#2a231b] hover:text-white transition-all duration-300 shadow-lg hover:shadow-xl active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {submitting ? (

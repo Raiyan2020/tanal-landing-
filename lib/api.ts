@@ -118,11 +118,17 @@ export const fetchTerms = (lang: string) =>
     .get<ApiResponse<TermsData>>("/site/terms", { lang, next: { revalidate: 3600 } } as RequestOptions)
     .then((res) => res.data);
 
-/** GET /site/event-types (revalidated every 5 minutes) */
+/**
+ * GET /site/event-types (revalidated every 5 minutes)
+ *
+ * The endpoint replies with `"data": null` — not an empty array — when no event
+ * types are configured, so the result is normalised to `[]` here and callers can
+ * always map over it.
+ */
 export const fetchEventTypes = (lang: string) =>
   api
-    .get<ApiResponse<EventType[]>>("/site/event-types", { lang, next: { revalidate: 300 } } as RequestOptions)
-    .then((res) => res.data);
+    .get<ApiResponse<EventType[] | null>>("/site/event-types", { lang, next: { revalidate: 300 } } as RequestOptions)
+    .then((res) => res.data ?? []);
 
 /** POST /site/service-requests */
 export const submitServiceRequest = (

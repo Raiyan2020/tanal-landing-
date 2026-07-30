@@ -41,6 +41,8 @@ const nextConfig: NextConfig = {
   },
   output: 'standalone',
   async headers() {
+    const isProd = process.env.NODE_ENV === 'production';
+
     const securityHeaders = [
       { key: 'X-Content-Type-Options', value: 'nosniff' },
       { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
@@ -74,12 +76,20 @@ const nextConfig: NextConfig = {
         headers: securityHeaders,
       },
       {
-        // Long-lived cache for Next.js immutable static assets
+        // Long-lived cache for Next.js immutable static assets.
+        //
+        // Only safe in production, where chunk filenames are content-hashed.
+        // `next dev` serves stable, unhashed names (…/chunks/app/layout.js), so
+        // an immutable year-long entry pins a stale bundle in the browser across
+        // server restarts — which surfaces as chunks that no longer match the
+        // server ("Cannot read properties of undefined (reading 'call')").
         source: '/_next/static/:path*',
         headers: [
           {
             key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
+            value: isProd
+              ? 'public, max-age=31536000, immutable'
+              : 'no-cache, no-store, must-revalidate',
           },
         ],
       },
