@@ -34,8 +34,7 @@ export default function Footer({ lang, isRtl, data, whatsappUrl }: FooterProps) 
                 alt={data.brand_name || "Tanal Logo"}
                 width={180}
                 height={60}
-                className="opacity-70 saturate-0 brightness-200 object-contain mx-auto"
-                referrerPolicy="no-referrer"
+                className="object-contain mx-auto"
               />
             </Link>
           </div>

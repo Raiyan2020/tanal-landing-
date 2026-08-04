@@ -118,13 +118,13 @@ export default function HomeClient({ initialSiteData, initialLang }: HomeClientP
             headingFontClass={headingFontClass}
           />
 
-          <ReservationSection
+          {/* <ReservationSection
             lang={lang}
             isRtl={isRtl}
             headingFontClass={headingFontClass}
             onSubmit={handleReservationSubmit}
             submitError={submitError}
-          />
+          /> */}
 
           <ContactSection
             data={siteData.contact}

@@ -143,9 +143,9 @@ export default function ContactSection({
             {heading.subtitle}
           </p>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center relative z-10 text-start">
+          {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center relative z-10 text-start"> */}
             {/* Map */}
-            <div className="w-full h-[280px] sm:h-[350px] rounded-[1.5rem] overflow-hidden glass-panel-dark border border-[#bbb2aa]/30 shadow-lg relative p-2">
+            {/* <div className="w-full h-[280px] sm:h-[350px] rounded-[1.5rem] overflow-hidden glass-panel-dark border border-[#bbb2aa]/30 shadow-lg relative p-2">
               <div className="w-full h-full rounded-xl overflow-hidden relative">
                 <iframe
                   src={mapEmbed}
@@ -156,7 +156,7 @@ export default function ContactSection({
                   referrerPolicy="no-referrer-when-downgrade"
                 />
               </div>
-            </div>
+            </div> */}
 
             {/* Content */}
             <div className="flex flex-col items-center lg:items-start text-center lg:text-start px-2">
@@ -195,7 +195,7 @@ export default function ContactSection({
                 </>
               )}
             </div>
-          </div>
+          {/* </div> */}
         </div>
       </div>
     </section>
