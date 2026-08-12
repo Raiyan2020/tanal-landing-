@@ -82,7 +82,7 @@ export default function HeroSection({
           </p>
 
           <div className="flex flex-col sm:flex-row items-center gap-6">
-            <a
+            {/* <a
               href={data.primary_cta.url}
               className="relative group px-8 py-4 bg-gradient-to-r from-[#857363] to-[#705e4e] text-white rounded-full overflow-hidden shadow-[0_8px_30px_rgb(133,115,99,0.3)] transition-transform hover:scale-105 active:scale-95 inline-block cursor-pointer"
             >
@@ -93,7 +93,7 @@ export default function HeroSection({
                   className={`w-4 h-4 ${isRtl ? "rotate-180" : ""}`}
                 />
               </span>
-            </a>
+            </a> */}
             <a
               href={data.secondary_cta.url}
               className="px-8 py-4 rounded-full border border-[#bbb2aa] text-[#362d23] hover:border-[#857363] hover:bg-white/50 glass-panel transition-all hover:shadow-[0_4px_20px_rgb(187,178,170,0.3)] font-medium tracking-wide inline-block cursor-pointer"

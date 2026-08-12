@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Instagram, Facebook } from "lucide-react";
+import { Facebook, Globe2, Instagram, Linkedin, Youtube } from "lucide-react";
 import type { SiteContact, SiteSocialLink } from "@/lib/types";
 import crystal from "@/public/crystal.webp";
 
@@ -15,6 +15,10 @@ function SocialIcon({ link }: { link: SiteSocialLink }) {
         return <Instagram className="w-5 h-5" />;
       case "facebook":
         return <Facebook className="w-5 h-5" />;
+      case "linkedin":
+        return <Linkedin className="w-5 h-5" />;
+      case "youtube":
+        return <Youtube className="w-5 h-5" />;
       case "whatsapp":
         return (
           <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
@@ -41,17 +45,17 @@ function SocialIcon({ link }: { link: SiteSocialLink }) {
           </svg>
         );
       default:
-        return null;
+        return <Globe2 className="w-5 h-5" />;
     }
   })();
 
-  if (!inner) return null;
   return (
     <a
       href={link.url}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label={`Visit our ${link.platform} page`}
+      aria-label={link.label || `Visit our ${link.platform} page`}
+      title={link.label || link.platform}
       className={cls}
     >
       {inner}
@@ -185,7 +189,7 @@ export default function ContactSection({
               {social_links.length > 0 && (
                 <>
                   <div className="w-full h-px bg-[#bbb2aa]/30 mb-8" />
-                  <div className="flex items-center gap-4 justify-center lg:justify-start">
+                  <div className="flex flex-wrap items-center gap-4 justify-center lg:justify-start">
                     {[...social_links]
                       .sort((a, b) => a.sort - b.sort)
                       .map((link, idx) => (
