@@ -39,7 +39,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  output: 'standalone',
   async headers() {
     const isProd = process.env.NODE_ENV === 'production';
 
