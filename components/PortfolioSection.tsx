@@ -5,13 +5,13 @@ import { motion } from "motion/react";
 import type { SitePortfolio } from "@/lib/types";
 
 const BASE_STORAGE_URL =
-  "https://portal.tanal.raiyan.cc/storage/images/landing/portfolio/";
+  "https://portal.tanalevents.com/storage/images/landing/portfolio/";
 
 /**
  * Cleans the image URL returned by the API.
  *
  * The backend sometimes produces a doubled path like:
- *   https://portal.tanal.raiyan.cc/storage/images/landing/portfolio/https://portal.tanal.raiyan.cc/storage/images/landing/portfolio/file.webp
+ *   https://portal.tanalevents.com/storage/images/landing/portfolio/https://portal.tanalevents.com/storage/images/landing/portfolio/file.webp
  *
  * This function extracts the real filename and rebuilds a clean URL.
  * Returns null when the URL is empty / truly invalid.

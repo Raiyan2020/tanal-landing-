@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/api/v1/:path*',
-        destination: `${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://portal.tanal.raiyan.cc/api/v1'}/:path*`,
+        destination: `${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://portal.tanalevents.com/api/v1'}/:path*`,
       },
     ];
   },
@@ -33,7 +33,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'portal.tanal.raiyan.cc',
+        hostname: 'portal.tanalevents.com',
         port: '',
         pathname: '/**',
       },
@@ -60,11 +60,11 @@ const nextConfig: NextConfig = {
           // Fonts: Google Fonts
           "font-src 'self' https://fonts.gstatic.com",
           // Images: self + optimized images + remote CDNs used
-          "img-src 'self' data: blob: https://raiyansoft.com https://portal.tanal.raiyan.cc https://picsum.photos https://maps.googleapis.com https://maps.gstatic.com",
+          "img-src 'self' data: blob: https://raiyansoft.com https://portal.tanalevents.com https://picsum.photos https://maps.googleapis.com https://maps.gstatic.com",
           // Frames: Google Maps embed only
           "frame-src https://maps.google.com https://www.google.com",
           // Connections: self + API
-          "connect-src 'self' https://portal.tanal.raiyan.cc",
+          "connect-src 'self' https://portal.tanalevents.com",
         ].join('; '),
       },
     ];
