@@ -3,9 +3,11 @@
 import Image from "next/image";
 import { motion } from "motion/react";
 import type { SitePortfolio } from "@/lib/types";
+import { API_ORIGIN } from "@/lib/api-config";
 
-const BASE_STORAGE_URL =
-  "https://portal.tanalevents.com/storage/images/landing/portfolio/";
+// Derived from NEXT_PUBLIC_API_BASE_URL rather than hardcoded, so it follows the
+// backend the rest of the site is pointed at.
+const BASE_STORAGE_URL = `${API_ORIGIN}/storage/images/landing/portfolio/`;
 
 /**
  * Cleans the image URL returned by the API.

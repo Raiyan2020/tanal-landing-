@@ -2,7 +2,10 @@
  * Tanal API Client
  *
  * All HTTP calls to the backend go through this module.
- * Base URL  → NEXT_PUBLIC_API_BASE_URL env variable.
+ * Base URL  → resolved in `lib/api-config.ts` from NEXT_PUBLIC_API_BASE_URL,
+ *             defaulting to https://portal.tanalevents.com/api/v1. Absolute on
+ *             the server, same-origin `/api/v1` in the browser (proxied by the
+ *             rewrite in `next.config.ts`).
  * Language  → passed per-call via the `Accept-Language` header so every
  *             endpoint automatically returns localised content.
  */
@@ -18,9 +21,19 @@ import type {
   TermsData,
 } from "./types";
 
-export const API_BASE_URL = typeof window === 'undefined'
-  ? (process.env.NEXT_PUBLIC_API_BASE_URL)
-  : "/api/v1";
+import { resolveApiBase } from "./api-config";
+
+export {
+  API_BASE_URL as API_ABSOLUTE_BASE_URL,
+  API_ORIGIN,
+  BROWSER_API_BASE_PATH,
+} from "./api-config";
+
+/**
+ * Kept as a named export for existing callers. It is the base for the runtime
+ * this module was bundled for — relative in the browser, absolute on the server.
+ */
+export const API_BASE_URL = resolveApiBase();
 
 // ─── Generic request helper ──────────────────────────────────────────────────
 
@@ -40,7 +53,7 @@ async function request<T>(
 
   const isFormData = body instanceof FormData;
 
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+  const response = await fetch(`${resolveApiBase()}${endpoint}`, {
     ...rest,
     ...(options.next && { next: options.next }),
     headers: {

@@ -1,12 +1,27 @@
 import type { NextConfig } from 'next';
 
+import {
+  API_BASE_URL,
+  API_HOSTNAME,
+  API_ORIGIN,
+  API_PROTOCOL,
+  BROWSER_API_BASE_PATH,
+} from './lib/api-config';
+
+/*
+ * Everything below derives the backend host from NEXT_PUBLIC_API_BASE_URL rather
+ * than repeating it, so repointing the site at another backend updates the proxy
+ * destination, the CSP and the allowed image hosts together. A CSP that lags the
+ * base URL is invisible at runtime — the browser just blocks the request.
+ */
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   async rewrites() {
     return [
       {
-        source: '/api/v1/:path*',
-        destination: `${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://portal.tanalevents.com/api/v1'}/:path*`,
+        // Browser calls hit this path and are proxied, keeping them same-origin.
+        source: `${BROWSER_API_BASE_PATH}/:path*`,
+        destination: `${API_BASE_URL}/:path*`,
       },
     ];
   },
@@ -32,8 +47,8 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
       {
-        protocol: 'https',
-        hostname: 'portal.tanalevents.com',
+        protocol: API_PROTOCOL,
+        hostname: API_HOSTNAME,
         port: '',
         pathname: '/**',
       },
@@ -60,11 +75,12 @@ const nextConfig: NextConfig = {
           // Fonts: Google Fonts
           "font-src 'self' https://fonts.gstatic.com",
           // Images: self + optimized images + remote CDNs used
-          "img-src 'self' data: blob: https://raiyansoft.com https://portal.tanalevents.com https://picsum.photos https://maps.googleapis.com https://maps.gstatic.com",
+          `img-src 'self' data: blob: https://raiyansoft.com ${API_ORIGIN} https://picsum.photos https://maps.googleapis.com https://maps.gstatic.com`,
           // Frames: Google Maps embed only
           "frame-src https://maps.google.com https://www.google.com",
-          // Connections: self + API
-          "connect-src 'self' https://portal.tanalevents.com",
+          // Connections: 'self' covers the proxied /api/v1 calls; the API origin
+          // is listed for anything that ever calls it directly.
+          `connect-src 'self' ${API_ORIGIN}`,
         ].join('; '),
       },
     ];
