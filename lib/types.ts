@@ -102,21 +102,6 @@ export interface EventType {
   sort: number;
 }
 
-// ─── /site/service-requests ──────────────────────────────────────────────────
-
-export interface ServiceRequestPayload {
-  name: string;
-  country_code: string;
-  phone: string;
-  landing_event_type_id: number;
-  event_date: string; // "YYYY-MM-DD"
-}
-
-export interface ServiceRequestResponse {
-  id?: string | number;
-  message?: string;
-}
-
 // ─── /site/about · /site/privacy · /site/terms ───────────────────────────────
 
 export interface AboutData {

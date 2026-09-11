@@ -14,8 +14,6 @@ import type {
   ApiResponse,
   SiteData,
   EventType,
-  ServiceRequestPayload,
-  ServiceRequestResponse,
   AboutData,
   PrivacyData,
   TermsData,
@@ -143,13 +141,11 @@ export const fetchEventTypes = (lang: string) =>
     .get<ApiResponse<EventType[] | null>>("/site/event-types", { lang, next: { revalidate: 300 } } as RequestOptions)
     .then((res) => res.data ?? []);
 
-/** POST /site/service-requests */
-export const submitServiceRequest = (
-  payload: ServiceRequestPayload,
-  lang: string
-) =>
-  api.post<ApiResponse<ServiceRequestResponse>>(
-    "/site/service-requests",
-    payload as unknown as Record<string, unknown>,
-    { lang }
-  );
+/*
+ * There is no reservation endpoint. `POST /site/service-requests` was removed
+ * from the backend with the service-requests module (task 021) and the route is
+ * commented out in `routes/Api/site.php`, so the call that used to live here
+ * answered 404. `components/ReservationSection.tsx` rendered that form and went
+ * with it (recoverable from git history). Bringing the form back needs a
+ * backend endpoint first.
+ */

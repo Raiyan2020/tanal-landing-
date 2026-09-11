@@ -1,11 +1,15 @@
 import { cookies } from "next/headers";
-import { Lang } from "@/lib/dictionaries";
-import { fetchPrivacy } from "@/lib/api";
+import { resolveLang } from "@/lib/dictionaries";
+import { fetchPrivacy, fetchSiteData } from "@/lib/api";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import type { SiteFooter } from "@/lib/types";
 
-const EMPTY_FOOTER: SiteFooter = {
+/**
+ * Rendered only when `/site` itself is unreachable — the real footer (brand,
+ * links, logo, copyright) comes from the API like it does on the home page.
+ */
+const FALLBACK_FOOTER: SiteFooter = {
   brand_name: "Tanal",
   tagline: "",
   description: "",
@@ -23,19 +27,23 @@ interface PageProps {
 export default async function PrivacyPolicyPage({ searchParams }: PageProps) {
   const resolvedParams = await searchParams;
   const cookieStore = await cookies();
-  const lang = (resolvedParams.lang === "en" || resolvedParams.lang === "ar")
-    ? resolvedParams.lang as Lang
-    : (cookieStore.get("tanal_lang")?.value === "en" || cookieStore.get("tanal_lang")?.value === "ar")
-      ? cookieStore.get("tanal_lang")?.value as Lang
-      : "ar";
+  const lang = resolveLang(resolvedParams.lang, cookieStore.get("tanal_lang")?.value);
 
-  let content = "";
-  try {
-    const data = await fetchPrivacy(lang);
-    content = data.privacy;
-  } catch (error) {
-    console.error("Failed to fetch privacy policy data on server:", error);
+  // Both are independent reads, so they go out together rather than in series.
+  const [contentResult, siteResult] = await Promise.allSettled([
+    fetchPrivacy(lang),
+    fetchSiteData(lang),
+  ]);
+
+  if (contentResult.status === "rejected") {
+    console.error("Failed to fetch privacy policy data on server:", contentResult.reason);
   }
+  if (siteResult.status === "rejected") {
+    console.error("Failed to fetch site data on server:", siteResult.reason);
+  }
+
+  const content = contentResult.status === "fulfilled" ? contentResult.value.privacy : "";
+  const site = siteResult.status === "fulfilled" ? siteResult.value : null;
 
   const isRtl = lang === "ar";
   const fontClass = isRtl ? "font-arabic" : "font-sans";
@@ -65,7 +73,12 @@ export default async function PrivacyPolicyPage({ searchParams }: PageProps) {
         </div>
       </main>
 
-      <Footer lang={lang} isRtl={isRtl} data={EMPTY_FOOTER} />
+      <Footer
+        lang={lang}
+        isRtl={isRtl}
+        data={site?.footer ?? FALLBACK_FOOTER}
+        whatsappUrl={site?.contact?.settings?.whatsapp_url}
+      />
     </div>
   );
 }
