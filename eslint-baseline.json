@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "eslint": "9.39.1",
+  "total": 1,
+  "findings": {
+    "hooks/use-mobile.ts | react-hooks/set-state-in-effect | error | Definition for rule 'react-hooks/set-state-in-effect' was not found.": 1
+  }
+}

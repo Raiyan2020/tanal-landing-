@@ -53,7 +53,6 @@ async function request<T>(
 
   const response = await fetch(`${resolveApiBase()}${endpoint}`, {
     ...rest,
-    ...(options.next && { next: options.next }),
     headers: {
       ...(!isFormData && { "Content-Type": "application/json" }),
       Accept: "application/json",
@@ -105,29 +104,20 @@ export const api = {
 
 // ─── Site endpoints ───────────────────────────────────────────────────────────
 
+const getData = <T>(endpoint: string, lang: string, revalidate: number) =>
+  api.get<ApiResponse<T>>(endpoint, { lang, next: { revalidate } }).then((res) => res.data);
+
 /** GET /site  — full landing page data (revalidated every 60s) */
-export const fetchSiteData = (lang: string) =>
-  api
-    .get<ApiResponse<SiteData>>("/site", { lang, next: { revalidate: 60 } } as RequestOptions)
-    .then((res) => res.data);
+export const fetchSiteData = (lang: string) => getData<SiteData>("/site", lang, 60);
 
 /** GET /site/about */
-export const fetchAbout = (lang: string) =>
-  api
-    .get<ApiResponse<AboutData>>("/site/about", { lang, next: { revalidate: 3600 } } as RequestOptions)
-    .then((res) => res.data);
+export const fetchAbout = (lang: string) => getData<AboutData>("/site/about", lang, 3600);
 
 /** GET /site/privacy */
-export const fetchPrivacy = (lang: string) =>
-  api
-    .get<ApiResponse<PrivacyData>>("/site/privacy", { lang, next: { revalidate: 3600 } } as RequestOptions)
-    .then((res) => res.data);
+export const fetchPrivacy = (lang: string) => getData<PrivacyData>("/site/privacy", lang, 3600);
 
 /** GET /site/terms */
-export const fetchTerms = (lang: string) =>
-  api
-    .get<ApiResponse<TermsData>>("/site/terms", { lang, next: { revalidate: 3600 } } as RequestOptions)
-    .then((res) => res.data);
+export const fetchTerms = (lang: string) => getData<TermsData>("/site/terms", lang, 3600);
 
 /**
  * GET /site/event-types (revalidated every 5 minutes)
@@ -137,9 +127,7 @@ export const fetchTerms = (lang: string) =>
  * always map over it.
  */
 export const fetchEventTypes = (lang: string) =>
-  api
-    .get<ApiResponse<EventType[] | null>>("/site/event-types", { lang, next: { revalidate: 300 } } as RequestOptions)
-    .then((res) => res.data ?? []);
+  getData<EventType[] | null>("/site/event-types", lang, 300).then((data) => data ?? []);
 
 /*
  * There is no reservation endpoint. `POST /site/service-requests` was removed

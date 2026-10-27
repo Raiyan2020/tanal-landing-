@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
-import { Lang } from "../lib/dictionaries";
+import { LANG_STORAGE_KEY, langStyles, type Lang } from "@/lib/dictionaries";
 import type { SiteData } from "@/lib/types";
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
@@ -15,40 +15,24 @@ const PortfolioSection = dynamic(() => import("@/components/PortfolioSection"), 
 const ContactSection = dynamic(() => import("@/components/ContactSection"), { ssr: false });
 const Footer = dynamic(() => import("@/components/Footer"), { ssr: false });
 
-const LANG_STORAGE_KEY = "tanal_lang";
-
 interface HomeClientProps {
   initialSiteData: SiteData | null;
   initialLang: Lang;
 }
 
 export default function HomeClient({ initialSiteData, initialLang }: HomeClientProps) {
-  const [lang, setLang] = useState<Lang>(initialLang);
+  const [lang] = useState<Lang>(initialLang);
   const [siteData] = useState<SiteData | null>(initialSiteData);
 
-  const isRtl = lang === "ar";
-  const fontClass = isRtl ? "font-arabic" : "font-sans";
-  const headingFontClass = isRtl ? "font-arabic font-bold" : "font-serif";
+  const { isRtl, fontClass, headingFontClass } = langStyles(lang);
 
   // Sync document direction & persist lang
   useEffect(() => {
     document.documentElement.dir = isRtl ? "rtl" : "ltr";
     document.documentElement.lang = lang;
     localStorage.setItem(LANG_STORAGE_KEY, lang);
-    document.cookie = `tanal_lang=${lang}; path=/; max-age=31536000; SameSite=Lax`;
+    document.cookie = `${LANG_STORAGE_KEY}=${lang}; path=/; max-age=31536000; SameSite=Lax`;
   }, [lang, isRtl]);
-
-  const toggleLanguage = () => {
-    const newLang = lang === "en" ? "ar" : "en";
-    setLang(newLang);
-    if (typeof window !== "undefined") {
-      localStorage.setItem(LANG_STORAGE_KEY, newLang);
-      document.cookie = `tanal_lang=${newLang}; path=/; max-age=31536000; SameSite=Lax`;
-      const params = new URLSearchParams(window.location.search);
-      params.set("lang", newLang);
-      window.location.href = `${window.location.pathname}?${params.toString()}`;
-    }
-  };
 
   return (
     <div
@@ -67,7 +51,6 @@ export default function HomeClient({ initialSiteData, initialLang }: HomeClientP
         lang={lang}
         isRtl={isRtl}
         headingFontClass={headingFontClass}
-        toggleLanguage={toggleLanguage}
       />
 
       {/* Page sections */}

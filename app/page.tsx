@@ -1,16 +1,9 @@
-import { cookies } from "next/headers";
 import { fetchSiteData } from "@/lib/api";
-import { resolveLang } from "@/lib/dictionaries";
+import { requestLang, type LangSearchParams } from "@/lib/request-lang";
 import HomeClient from "./HomeClient";
 
-interface PageProps {
-  searchParams: Promise<{ lang?: string }>;
-}
-
-export default async function Page({ searchParams }: PageProps) {
-  const resolvedParams = await searchParams;
-  const cookieStore = await cookies();
-  const lang = resolveLang(resolvedParams.lang, cookieStore.get("tanal_lang")?.value);
+export default async function Page({ searchParams }: LangSearchParams) {
+  const lang = await requestLang(searchParams);
 
   let siteData = null;
   try {

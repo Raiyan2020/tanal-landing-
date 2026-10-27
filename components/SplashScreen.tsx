@@ -5,9 +5,6 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "motion/react";
 import logo from "@/public/logo.webp";
 
-const FALLBACK_LOGO =
-  "https://raiyansoft.com/wp-content/uploads/2026/05/logo-2.png";
-
 export default function SplashScreen() {
   // Start hidden — only show after client hydration to not block LCP paint
   const [mounted, setMounted] = useState(false);
@@ -57,7 +54,7 @@ export default function SplashScreen() {
 
             <div className="relative w-48 h-20">
               <Image
-                src={logo || FALLBACK_LOGO}
+                src={logo}
                 alt="Tanal Logo"
                 fill
                 priority

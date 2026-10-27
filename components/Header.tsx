@@ -1,14 +1,20 @@
 "use client";
 
-import { Lang } from "@/lib/dictionaries";
+import { LANG_STORAGE_KEY, type Lang } from "@/lib/dictionaries";
 import Image from "next/image";
 import Link from "next/link";
 import { Globe } from "lucide-react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import logo from "@/public/logo.webp";
 
+const NAV_ITEMS = [
+  { anchor: "how-it-works", label: "howItWorks" },
+  { anchor: "features", label: "features" },
+  { anchor: "portfolio", label: "portfolio" },
+  { anchor: "contact", label: "contact" },
+] as const;
+
 // Nav labels per language (kept locally — no API call needed for nav)
-const NAV_LABELS: Record<Lang, Record<string, string>> = {
+const NAV_LABELS: Record<Lang, Record<(typeof NAV_ITEMS)[number]["label"], string>> = {
   ar: {
     howItWorks: "كيف يعمل؟",
     features: "المميزات",
@@ -27,30 +33,15 @@ interface HeaderProps {
   lang: Lang;
   isRtl: boolean;
   headingFontClass: string;
-  toggleLanguage?: () => void;
-  /** Logo URL from API (footer.logo_url). Falls back to the static asset if not provided. */
-  logoUrl?: string | null;
 }
 
-const FALLBACK_LOGO =
-  "https://raiyansoft.com/wp-content/uploads/2026/05/logo-2.png";
-
-export default function Header({
-  lang,
-  isRtl,
-  headingFontClass,
-  toggleLanguage,
-}: HeaderProps) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-
+export default function Header({ lang, isRtl, headingFontClass }: HeaderProps) {
   const nav = NAV_LABELS[lang];
 
   const handleToggleLanguage = () => {
     const newLang = lang === "en" ? "ar" : "en";
     if (typeof window !== "undefined") {
-      localStorage.setItem("tanal_lang", newLang);
+      localStorage.setItem(LANG_STORAGE_KEY, newLang);
       const params = new URLSearchParams(window.location.search);
       params.set("lang", newLang);
       window.location.href = `${window.location.pathname}?${params.toString()}`;
@@ -63,7 +54,7 @@ export default function Header({
         <Link href={`/?lang=${lang}`} className="flex items-center gap-4">
           <div className="relative w-28 h-10">
             <Image
-              src={logo || FALLBACK_LOGO}
+              src={logo}
               alt="Tanal Logo"
               fill
               className={`object-contain md:object-center ${isRtl ? "object-right" : "object-left"}`}
@@ -73,30 +64,15 @@ export default function Header({
         </Link>
 
         <div className="hidden md:flex items-center gap-8">
-          <Link
-            href={`/?lang=${lang}#how-it-works`}
-            className={`${headingFontClass} text-lg hover:text-[#362d23] transition-colors ${isRtl ? "font-medium" : ""} text-[#857363]`}
-          >
-            {nav.howItWorks}
-          </Link>
-          <Link
-            href={`/?lang=${lang}#features`}
-            className={`${headingFontClass} text-lg hover:text-[#362d23] transition-colors ${isRtl ? "font-medium" : ""} text-[#857363]`}
-          >
-            {nav.features}
-          </Link>
-          <Link
-            href={`/?lang=${lang}#portfolio`}
-            className={`${headingFontClass} text-lg hover:text-[#362d23] transition-colors ${isRtl ? "font-medium" : ""} text-[#857363]`}
-          >
-            {nav.portfolio}
-          </Link>
-          <Link
-            href={`/?lang=${lang}#contact`}
-            className={`${headingFontClass} text-lg hover:text-[#362d23] transition-colors ${isRtl ? "font-medium" : ""} text-[#857363]`}
-          >
-            {nav.contact}
-          </Link>
+          {NAV_ITEMS.map(({ anchor, label }) => (
+            <Link
+              key={anchor}
+              href={`/?lang=${lang}#${anchor}`}
+              className={`${headingFontClass} text-lg hover:text-[#362d23] transition-colors ${isRtl ? "font-medium" : ""} text-[#857363]`}
+            >
+              {nav[label]}
+            </Link>
+          ))}
         </div>
 
         <div className="flex items-center gap-4">

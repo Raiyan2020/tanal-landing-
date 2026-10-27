@@ -26,20 +26,6 @@
   }
 }
 
-.rdp-button_previous,
-.rdp-button_next {
-  color: #857363 !important;
-
-  svg {
-    background-color: #857363 !important;
-    border-radius: 50% !important;
-    color: white !important;
-    fill: white !important;
-    width: 20px !important;
-    height: 20px !important;
-  }
-}
-
 .glass-panel {
   background: rgba(255, 255, 255, 0.4);
   backdrop-filter: blur(16px);

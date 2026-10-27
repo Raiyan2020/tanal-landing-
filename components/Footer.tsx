@@ -1,10 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Lang } from "@/lib/dictionaries";
+import type { Lang } from "@/lib/dictionaries";
 import type { SiteFooter } from "@/lib/types";
 
+const FOOTER_LINKS = [
+  { path: "/about-us", label: "aboutUs" },
+  { path: "/privacy-policy", label: "privacyPolicy" },
+  { path: "/terms-and-conditions", label: "terms" },
+] as const;
+
 // Static fallback labels per language for footer links
-const FOOTER_LABELS: Record<Lang, Record<string, string>> = {
+const FOOTER_LABELS: Record<Lang, Record<(typeof FOOTER_LINKS)[number]["label"], string>> = {
   ar: { aboutUs: "من نحن", privacyPolicy: "سياسة الخصوصية", terms: "الشروط والأحكام" },
   en: { aboutUs: "About Us", privacyPolicy: "Privacy Policy", terms: "Terms & Conditions" },
 };
@@ -48,24 +54,15 @@ export default function Footer({ lang, isRtl, data, whatsappUrl }: FooterProps) 
           <div
             className={`flex flex-wrap justify-center gap-6 md:gap-10 mb-12 ${isRtl ? "font-medium" : ""}`}
           >
-            <Link
-              href={`/about-us?lang=${lang}`}
-              className="text-sm uppercase tracking-widest hover:text-white transition-colors"
-            >
-              {labels.aboutUs}
-            </Link>
-            <Link
-              href={`/privacy-policy?lang=${lang}`}
-              className="text-sm uppercase tracking-widest hover:text-white transition-colors"
-            >
-              {labels.privacyPolicy}
-            </Link>
-            <Link
-              href={`/terms-and-conditions?lang=${lang}`}
-              className="text-sm uppercase tracking-widest hover:text-white transition-colors"
-            >
-              {labels.terms}
-            </Link>
+            {FOOTER_LINKS.map(({ path, label }) => (
+              <Link
+                key={path}
+                href={`${path}?lang=${lang}`}
+                className="text-sm uppercase tracking-widest hover:text-white transition-colors"
+              >
+                {labels[label]}
+              </Link>
+            ))}
           </div>
 
           <div className="w-full h-px bg-white/10 mb-8 max-w-3xl mx-auto" />

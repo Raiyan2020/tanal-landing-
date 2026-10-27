@@ -58,7 +58,6 @@ export default function HowItWorksSection({
                     referrerPolicy="no-referrer"
                     onError={(e) => {
                       const img = e.currentTarget as HTMLImageElement;
-                      const parent = img.parentElement;
                       img.style.display = "none";
                     }}
                   />
